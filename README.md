@@ -2,6 +2,8 @@
 
 Convo is a full‑stack chat application where users can sign up, sign in, create or join rooms via room code, and exchange messages with other members. Room ownership, membership, and deletion behavior are handled on the backend, while a modern React + Tailwind UI powers the frontend. Real‑time message delivery is implemented with **Socket.IO** (WebSockets) between the backend and the RoomChat page.
 
+**Live Demo (Frontend)**: https://convoconnect-frontend.onrender.com
+
 This workspace contains two main projects:
 
 - **Convo_Backend** – Node.js/Express API with MongoDB (Atlas) via Mongoose
