@@ -265,34 +265,6 @@ export default function RoomChat() {
         return;
       }
 
-      const msg = data?.message;
-      if (msg) {
-        const authorName = msg.author?.name || "You";
-        const avatarText =
-          msg.author?.avatar && msg.author.avatar.trim().length > 0
-            ? msg.author.avatar.trim().slice(0, 2).toUpperCase()
-            : authorName
-                .split(" ")
-                .map((part: string) => part.charAt(0).toUpperCase())
-                .join("")
-                .slice(0, 2);
-
-        const newMessage: Message = {
-          id: msg._id,
-          author: authorName,
-          avatar: avatarText || "?",
-          content: msg.content,
-          timestamp: new Date(msg.createdAt).toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          }),
-          isMine: true,
-        };
-
-        setMessages((prev) => [...prev, newMessage]);
-      }
-
       setMessageInput("");
     } catch (error) {
       console.error("Failed to send message", error);
