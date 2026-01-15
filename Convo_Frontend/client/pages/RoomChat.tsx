@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { MessageCircle, Send, LogOut, Users, Menu, X } from "lucide-react";
+import { io, Socket } from "socket.io-client";
 
 interface Message {
   id: string;
@@ -179,6 +180,57 @@ export default function RoomChat() {
 
     fetchRoomData();
   }, [API_BASE, navigate, roomId, currentUserId]);
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    const socket: Socket = io(API_BASE, {
+      transports: ["websocket"],
+    });
+
+    socket.emit("joinRoom", roomId);
+
+    socket.on("room:new-message", (payload: any) => {
+      if (!payload || String(payload.roomId) !== String(roomId)) return;
+
+      const msg = payload.message;
+      if (!msg) return;
+
+      const authorName = msg.author?.name || "Unknown";
+      const avatarText =
+        msg.author?.avatar && msg.author.avatar.trim().length > 0
+          ? msg.author.avatar.trim().slice(0, 2).toUpperCase()
+          : authorName
+              .split(" ")
+              .map((part: string) => part.charAt(0).toUpperCase())
+              .join("")
+              .slice(0, 2);
+
+      const isMine =
+        currentUserId && msg.author?._id
+          ? String(msg.author._id) === String(currentUserId)
+          : false;
+
+      const newMessage: Message = {
+        id: msg._id,
+        author: authorName,
+        avatar: avatarText || "?",
+        content: msg.content,
+        timestamp: new Date(msg.createdAt).toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        }),
+        isMine,
+      };
+
+      setMessages((prev) => [...prev, newMessage]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [API_BASE, roomId, currentUserId]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();

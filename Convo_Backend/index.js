@@ -3,9 +3,19 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { z } = require("zod");
+const http = require("http");
+const { Server } = require("socket.io");
 const { connectDB, User, Room, Message, RoomMember } = require("./db");
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_change_me";
 
@@ -162,6 +172,20 @@ app.patch("/me", authMiddleware, async (req, res) => {
     console.error("PATCH /me error", err);
     res.status(500).json({ message: "Internal server error" });
   }
+});
+
+io.on("connection", (socket) => {
+  console.log("Socket connected", socket.id);
+
+  socket.on("joinRoom", (roomId) => {
+    if (roomId) {
+      socket.join(String(roomId));
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Socket disconnected", socket.id);
+  });
 });
 
 // SIGN UP
@@ -385,10 +409,16 @@ app.post("/rooms/:roomId/messages", authMiddleware, async (req, res) => {
         .json({ message: "You are not a member of this room" });
     }
 
-    const message = await Message.create({
+    let message = await Message.create({
       room: roomId,
       author: req.user.id,
       content: content.trim(),
+    });
+    message = await message.populate("author", "name email avatar");
+
+    io.to(String(roomId)).emit("room:new-message", {
+      roomId: String(roomId),
+      message,
     });
 
     res.status(201).json({ message });
@@ -599,6 +629,6 @@ app.post("/rooms/:roomId/leave", authMiddleware, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
