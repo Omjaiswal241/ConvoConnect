@@ -16,7 +16,8 @@ export default function SignUp() {
   const [apiError, setApiError] = useState<string | null>(null);
 
   const API_BASE =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://convoconnect-r74v.onrender.com";
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
