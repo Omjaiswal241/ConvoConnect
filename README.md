@@ -1,6 +1,6 @@
 # Convo – Real‑Time Room Chat App
 
-Convo is a full‑stack chat application where users can sign up, sign in, create or join rooms via room code, and exchange messages with other members. Room ownership, membership, and deletion behavior are handled on the backend, while a modern React + Tailwind UI powers the frontend.
+Convo is a full‑stack chat application where users can sign up, sign in, create or join rooms via room code, and exchange messages with other members. Room ownership, membership, and deletion behavior are handled on the backend, while a modern React + Tailwind UI powers the frontend. Real‑time message delivery is implemented with **Socket.IO** (WebSockets) between the backend and the RoomChat page.
 
 This workspace contains two main projects:
 
@@ -36,6 +36,7 @@ This workspace contains two main projects:
   - Message history is loaded when entering a room
   - User’s own messages are shown on the **right**, others’ on the **left**
   - Basic member list with avatars is shown in the sidebar
+  - New messages are pushed in **real time** via Socket.IO (WebSockets)
 
 - **Profiles & Avatars**
   - Backend supports `GET /me` and `PATCH /me` to read/update profile (name + avatar field)
@@ -53,6 +54,7 @@ This workspace contains two main projects:
 - bcryptjs (password hashing)
 - jsonwebtoken (JWT auth)
 - Zod (schema validation)
+- Socket.IO server for WebSocket‑based real‑time events
 - cors, dotenv
 
 ### Frontend (Convo_Frontend)
@@ -62,6 +64,7 @@ This workspace contains two main projects:
 - React Router DOM
 - @tanstack/react-query
 - Tailwind CSS + Radix UI components + shadcn‑style component abstractions
+- socket.io-client for WebSocket connections to the backend
 - lucide‑react icons
 
 ---
@@ -127,14 +130,13 @@ Convo/
 
 ## Frontend Setup (Convo_Frontend)
 
-> The frontend uses **pnpm** in `package.json` metadata, but you can also use npm or yarn if you prefer. The lockfile is `pnpm-lock.yaml`.
+> The frontend uses **npm** as the primary package manager. You can still use pnpm or yarn locally if you prefer, but the canonical lockfile in the repo is `package-lock.json`.
 
 1. **Install dependencies**
 
    ```bash
-   cd Convo_Frontend
-   pnpm install
-   # or: npm install
+  cd Convo_Frontend
+  npm install
    ```
 
 2. **Configure environment**
@@ -150,9 +152,8 @@ Convo/
 3. **Run the dev server**
 
    ```bash
-   cd Convo_Frontend
-   pnpm dev
-   # or: npm run dev
+  cd Convo_Frontend
+  npm run dev
    ```
 
    Open the printed URL (usually `http://localhost:5173`) in your browser.
@@ -233,7 +234,7 @@ From `Convo_Frontend`:
 
 ## Future Improvements
 
-- Real‑time updates via WebSockets (e.g., Socket.IO) instead of request‑only flows
+- Presence indicators and typing status over Socket.IO
 - Rich link previews (e.g., for Instagram reels) in messages
 - Full profile UI (frontend) to manage avatar and display name
 - Advanced room settings (privacy, invites, moderators)
