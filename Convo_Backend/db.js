@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
+require("dotenv").config(); // Load environment variables
 
 // MongoDB connection
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb+srv://Om:om110904@cluster0.fbcrg9t.mongodb.net/ConvoConnect";
+const MONGODB_URI = process.env.MONGODB_URI;
 
 async function connectDB() {
   try {
